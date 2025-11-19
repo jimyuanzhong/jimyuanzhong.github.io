@@ -22,53 +22,61 @@
             <div class="language-options">
                 <button class="lang-btn" data-lang="en">English</button>
                 <button class="lang-btn" data-lang="cn">中文</button>
-            </div>
-        </div>
-    </div>
+                <!DOCTYPE html>
+                <html lang="en">
 
-    <!-- Main Application -->
-    <div id="app" class="app-container">
-        <header class="site-header">
-            <div class="logo">Travel Diary</div>
-            <nav class="site-nav">
-                <button id="add-entry-btn" class="nav-btn" data-i18n="addEntry">Add Entry</button>
-            </nav>
-        </header>
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Travel Diary</title>
+                    <link rel="preconnect" href="https://fonts.googleapis.com">
+                    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+                    <link
+                        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:wght@400;700&display=swap"
+                        rel="stylesheet">
+                    <link rel="stylesheet" href="css/styles.css">
+                </head>
 
-        <main>
-            <section class="hero">
-                <h1 class="hero-title" data-i18n="heroTitle">Your Journey, Your Story</h1>
-                <p class="hero-subtitle" data-i18n="heroSubtitle">Capture every moment of your adventures.</p>
-            </section>
+                <body>
+                    <!-- Language Selection Overlay -->
+                    <div id="language-overlay" class="overlay">
+                        <div class="overlay-content">
+                            <h1 class="overlay-title">Welcome / 欢迎</h1>
+                            <p class="overlay-subtitle">Please select your language / 请选择语言</p>
+                            <div class="language-options">
+                                <button class="lang-btn" data-lang="en">English</button>
+                                <button class="lang-btn" data-lang="cn">中文</button>
+                            </div>
+                        </div>
+                    </div>
 
-            <section class="diary-grid" id="diary-grid">
-                <!-- Diary entries will be injected here -->
-                <div class="empty-state">
-                    <p data-i18n="noEntries">No entries yet. Start your journey!</p>
-                </div>
-            </section>
-        </main>
+                    <!-- Main Application -->
+                    <div id="app" class="app-container">
+                        <header class="site-header">
+                            <div class="logo">Travel Diary</div>
+                        </header>
 
-        <footer class="site-footer">
-            <p>&copy; 2024 Travel Diary</p>
-        </footer>
-    </div>
+                        <main>
+                            <section class="hero">
+                                <h1 class="hero-title" data-i18n="heroTitle">Your Journey, Your Story</h1>
+                                <p class="hero-subtitle" data-i18n="heroSubtitle">Capture every moment of your
+                                    adventures.</p>
+                            </section>
 
-    <!-- Add Entry Modal -->
-    <div id="entry-modal" class="modal hidden">
-        <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <h2 data-i18n="addEntryTitle">Add New Memory</h2>
-            <form id="entry-form">
-                <div class="form-group">
-                    <label for="entry-title" data-i18n="labelTitle">Title</label>
-                    <input type="text" id="entry-title" required>
-                </div>
-                <div class="form-group">
-                    <label for="entry-location" data-i18n="labelLocation">Location</label>
-                    <input type="text" id="entry-location" required>
-                </div>
-    <script src="js/app.js"></script>
-</body>
+                            <section class="diary-grid" id="diary-grid">
+                                <!-- Diary entries will be injected here -->
+                                <div class="empty-state">
+                                    <p data-i18n="noEntries">No entries yet. Start your journey!</p>
+                                </div>
+                            </section>
+                        </main>
 
-</html>
+                        <footer class="site-footer">
+                            <p>&copy; 2024 Travel Diary</p>
+                        </footer>
+                    </div>
+
+                    <script src="js/app.js"></script>
+                </body>
+
+                </html>
