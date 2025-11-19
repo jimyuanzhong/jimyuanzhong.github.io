@@ -10,7 +10,12 @@ const translations = {
         labelLocation: "Location",
         labelDate: "Date",
         labelDescription: "Description",
-        btnSave: "Save Memory"
+        labelDate: "Date",
+        labelDescription: "Description",
+        labelImage: "Image (Optional)",
+        btnSave: "Save Memory",
+        btnEdit: "Edit",
+        editEntryTitle: "Edit Memory"
     },
     cn: {
         addEntry: "添加日记",
@@ -22,7 +27,12 @@ const translations = {
         labelLocation: "地点",
         labelDate: "日期",
         labelDescription: "描述",
-        btnSave: "保存回忆"
+        labelDate: "日期",
+        labelDescription: "描述",
+        labelImage: "图片 (可选)",
+        btnSave: "保存回忆",
+        btnEdit: "编辑",
+        editEntryTitle: "编辑回忆"
     }
 };
 
@@ -37,6 +47,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeModalBtn = document.querySelector('.close-modal');
     const entryForm = document.getElementById('entry-form');
     const diaryGrid = document.getElementById('diary-grid');
+    const entryImageInput = document.getElementById('entry-image');
+    let currentEditId = null;
 
     // Check for saved language
     const savedLang = localStorage.getItem('preferredLanguage');
@@ -63,6 +75,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Modal Interactions
     addEntryBtn.addEventListener('click', () => {
+        currentEditId = null;
+        entryForm.reset();
+        document.querySelector('[data-i18n="addEntryTitle"]').textContent = translations[document.documentElement.lang || 'en'].addEntryTitle;
         modal.classList.remove('hidden');
     });
 
@@ -77,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Form Submission
-    entryForm.addEventListener('submit', (e) => {
+    entryForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
         const title = document.getElementById('entry-title').value;
@@ -85,23 +100,58 @@ document.addEventListener('DOMContentLoaded', () => {
         const date = document.getElementById('entry-date').value;
         const desc = document.getElementById('entry-desc').value;
 
-        const newEntry = {
-            id: Date.now(),
+        let image = null;
+        if (entryImageInput.files && entryImageInput.files[0]) {
+            image = await convertToBase64(entryImageInput.files[0]);
+        } else if (currentEditId) {
+            // Keep existing image if editing and no new image selected
+            const existingEntry = getEntryById(currentEditId);
+            if (existingEntry) {
+                image = existingEntry.image;
+            }
+        }
+
+        const entryData = {
+            id: currentEditId || Date.now(),
             title,
             location,
             date,
-            desc
+            desc,
+            image
         };
 
-        saveEntry(newEntry);
+        saveEntry(entryData);
         entryForm.reset();
         modal.classList.add('hidden');
         loadEntries();
     });
 
-    function saveEntry(entry) {
+    function convertToBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = error => reject(error);
+        });
+    }
+
+    function getEntryById(id) {
         const entries = JSON.parse(localStorage.getItem('diaryEntries') || '[]');
-        entries.unshift(entry);
+        return entries.find(entry => entry.id === id);
+    }
+
+    function saveEntry(entry) {
+        let entries = JSON.parse(localStorage.getItem('diaryEntries') || '[]');
+
+        if (currentEditId) {
+            const index = entries.findIndex(e => e.id === currentEditId);
+            if (index !== -1) {
+                entries[index] = entry;
+            }
+        } else {
+            entries.unshift(entry);
+        }
+
         localStorage.setItem('diaryEntries', JSON.stringify(entries));
     }
 
@@ -119,8 +169,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         diaryGrid.innerHTML = entries.map(entry => `
             <article class="diary-card">
+                ${entry.image ? `<div class="diary-image" style="background-image: url('${entry.image}')"></div>` : ''}
                 <div class="diary-content">
-                    <span class="diary-date">${formatDate(entry.date)}</span>
+                    <div class="diary-header">
+                        <span class="diary-date">${formatDate(entry.date)}</span>
+                        <button class="edit-btn" onclick="window.editEntry(${entry.id})">
+                            ${translations[document.documentElement.lang || 'en'].btnEdit}
+                        </button>
+                    </div>
                     <h3 class="diary-title">${entry.title}</h3>
                     <div class="diary-location">
                         <span>📍</span> ${entry.location}
@@ -130,6 +186,25 @@ document.addEventListener('DOMContentLoaded', () => {
             </article>
         `).join('');
     }
+
+    // Expose editEntry to global scope so onclick works
+    window.editEntry = function (id) {
+        const entry = getEntryById(id);
+        if (!entry) return;
+
+        currentEditId = id;
+
+        document.getElementById('entry-title').value = entry.title;
+        document.getElementById('entry-location').value = entry.location;
+        document.getElementById('entry-date').value = entry.date;
+        document.getElementById('entry-desc').value = entry.desc;
+
+        // Update modal title
+        const lang = document.documentElement.lang || 'en';
+        document.querySelector('[data-i18n="addEntryTitle"]').textContent = translations[lang].editEntryTitle;
+
+        modal.classList.remove('hidden');
+    };
 
     function formatDate(dateString) {
         const options = { year: 'numeric', month: 'long', day: 'numeric' };
