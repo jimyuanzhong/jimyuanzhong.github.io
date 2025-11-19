@@ -1,0 +1,10 @@
+[
+    {
+        "id": 1,
+        "title": "My First Journey",
+        "location": "Paris, France",
+        "date": "2024-05-20",
+        "desc": "Arrived in Paris today! The Eiffel Tower is magnificent.",
+        "image": "images/paris.jpg"
+    }
+]
